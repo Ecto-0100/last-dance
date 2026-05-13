@@ -985,7 +985,7 @@ setInterval(() => {
           room.slots = room.slots || {};
           room.slots.gaveUp = true;
           if (room.slots.atk && !room.isResolving) {
-             room.logs.push(`Time over. ${defender?.name || 'Defender'} failed to respond.`);
+             room.logs.push(`시간 초과. ${defender?.name || '수비자'}가 수비를 포기했습니다.`);
              room.isResolving = true;
              resolveRound(room);
           }
@@ -995,10 +995,11 @@ setInterval(() => {
         const attacker = room.players[attackerId];
         if (now - room.lastActivity > 60000) {
           console.log(`[AFK] Attacker ${attackerId} timed out in room ${roomId}`);
-          room.logs.push(`Time over. ${attacker?.name || 'Attacker'} forfeits turn.`);
-          room.isResolving = true; 
+          room.logs.push(`시간 초과. ${attacker?.name || '공격자'}의 턴이 넘어갑니다.`);
+          room.slots = { atk: null, def: null, effect: [], gaveUp: false };
+          room.readyForCombat = [];
+          room.currentTarget = null;
           advanceTurn(room);
-          room.isResolving = false;
         }
       }
     } else if (room.phase === 'roulette') {

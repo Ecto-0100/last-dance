@@ -224,9 +224,7 @@ export default function App() {
    };
 
    const skipTurn = () => {
-      if (window.confirm("정말 턴을 포기하시겠습니까?")) {
-         socket.emit('forfeit_attack', { roomId: gameState.id });
-      }
+      socket.emit('forfeit_attack', { roomId: gameState.id });
    };
 
    const fieldClass = gameState?.fieldEvent ? `field-${gameState.fieldEvent}` : '';
@@ -880,7 +878,7 @@ export default function App() {
 
                      <button className="btn" disabled={gameState.isResolving || (!isMeAttacker && !isMeDefender) || gameState.turnStats?.mergeUsedBy?.[persistentId]} onClick={() => { setSelectedCards([]); setIsMergeModalOpen(true); }}>합성</button>
 
-                     {isMeAttacker && !gameState.slots?.atk && <button className="btn" style={{ borderColor: 'gray' }} disabled={gameState.isResolving} onClick={skipTurn}>🏳️ 턴 포기</button>}
+                     {isMeAttacker && !gameState.slots?.atk && <button className="btn" style={{ borderColor: 'gray' }} disabled={gameState.isResolving} onClick={skipTurn}>🏳️ 공격 포기</button>}
 
                      {isMeDefender && gameState.defenderPhaseStart && !gameState.slots?.def && !gameState.slots?.gaveUp &&
                         <button className="btn" style={{ color: 'var(--accent-red)' }} disabled={gameState.isResolving} onClick={giveUpDefense}>🏳️ 수비 포기</button>}
