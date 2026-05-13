@@ -234,7 +234,7 @@ export default function App() {
          {errorMsg && <div className="error-toast">{errorMsg}</div>}
 
          {appState === 'title' && (
-            <div 
+            <div
                className={`title-screen-bg ${isTransitioning ? 'door-open-transition' : ''}`}
                onClick={handleTitleClick}
             >
@@ -248,20 +248,20 @@ export default function App() {
             <div className={`lobby-screen-bg ${hoveredLobbyBtn ? 'pointing' : ''}`}>
                <div className="lobby-container">
                   <div className="menu-area">
-                     <button 
-                        className="lobby-btn" 
+                     <button
+                        className="lobby-btn"
                         onMouseEnter={() => setHoveredLobbyBtn(2)}
                         onMouseLeave={() => setHoveredLobbyBtn(null)}
                         onClick={() => openRoomPopup(2)}
                      >2인 대전</button>
-                     <button 
-                        className="lobby-btn" 
+                     <button
+                        className="lobby-btn"
                         onMouseEnter={() => setHoveredLobbyBtn(3)}
                         onMouseLeave={() => setHoveredLobbyBtn(null)}
                         onClick={() => openRoomPopup(3)}
                      >3인 대전</button>
-                     <button 
-                        className="lobby-btn" 
+                     <button
+                        className="lobby-btn"
                         onMouseEnter={() => setHoveredLobbyBtn(4)}
                         onMouseLeave={() => setHoveredLobbyBtn(null)}
                         onClick={() => openRoomPopup(4)}
@@ -298,7 +298,7 @@ export default function App() {
             <div className="text-center" style={{ width: '100%', position: 'relative' }}>
                <button className="btn" style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 100, fontSize: '1.2rem', padding: '10px 20px' }} onClick={leaveRoom}>◀ BACK</button>
                <button className="room-id-badge clickable" style={{ position: 'absolute', top: '1rem', left: '50%', transform: 'translateX(-50%)', zIndex: 100, marginBottom: 0 }} onClick={() => navigator.clipboard.writeText(roomId)}>Room ID: <span style={{ color: 'var(--accent-gold)' }}>{roomId}</span></button>
-               
+
                <div className="portraits-row" style={{ justifyContent: 'center', marginTop: '6rem', alignItems: 'flex-start' }}>
                   {Array.from({ length: gameState.maxPlayers }).map((_, i) => {
                      const id = gameState.turnOrder[i];
@@ -318,34 +318,36 @@ export default function App() {
                      return (
                         <div key={id} className="player-card-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '220px' }}>
                            <div className={`player-card ${p.ready ? 'ready' : ''}`} style={{ width: '100%' }}>
-                              <div className="lobby-portrait" style={{ height: '300px', backgroundColor: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem', borderRadius: '8px 8px 0 0', overflow: 'hidden' }}>
+                              <div className="lobby-portrait" style={{ height: '250px', backgroundColor: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem', borderRadius: '8px 8px 0 0', overflow: 'hidden' }}>
                                  {char?.image ? (
                                     <img src={char.image} alt={char.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                  ) : (
                                     char?.icon
                                  )}
                               </div>
-                              <div style={{ padding: '15px' }}>
-                                 <div className="font-gothic" style={{ fontSize: '1.2rem' }}>{p.name} {isHost && '👑'}</div>
-                                 <div style={{ fontSize: '0.9rem', color: '#ccc', margin: '5px 0' }}>[{char?.name}]</div>
-                                 <div style={{ fontSize: '1rem', color: 'var(--accent-gold)', fontWeight: 'bold' }}>{p.ready ? 'READY' : 'SELECTING...'}</div>
+                              <div style={{ padding: '15px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, justifyContent: 'space-between' }}>
+                                 <div>
+                                    <div className="font-gothic" style={{ fontSize: '1.2rem', textAlign: 'center' }}>{p.name} {isHost && '👑'}</div>
+                                    <div style={{ fontSize: '0.9rem', color: '#ccc', textAlign: 'center' }}>[{char?.name}]</div>
+                                 </div>
+                                 <div style={{ fontSize: '1rem', color: 'var(--accent-gold)', fontWeight: 'bold', textAlign: 'center' }}>{p.ready ? 'READY' : 'SELECTING...'}</div>
+                                 {isMe && (
+                                    <button
+                                       className="btn"
+                                       onClick={() => setIsClassMenuOpen(true)}
+                                       disabled={!canChangeClass}
+                                       style={{ width: '100%', fontSize: '0.9rem', padding: '8px', marginTop: '5px' }}
+                                    >
+                                       클래스 변경
+                                    </button>
+                                 )}
                               </div>
                            </div>
-                           {isMe && (
-                              <button 
-                                 className="btn" 
-                                 onClick={() => setIsClassMenuOpen(true)} 
-                                 disabled={!canChangeClass}
-                                 style={{ width: '100%', fontSize: '1rem', padding: '10px' }}
-                              >
-                                 클래스 변경
-                              </button>
-                           )}
                         </div>
                      )
                   })}
                </div>
-               
+
                <div style={{ marginTop: '4rem', display: 'flex', justifyContent: 'center' }}>
                   {gameState.hostId === persistentId ? (
                      <button className="btn btn-large" disabled={!Object.values(gameState.players).every(p => p.ready) || gameState.turnOrder.length < 2} onClick={startMatch}>결투 시작</button>
@@ -472,9 +474,9 @@ export default function App() {
                         (gameState.currentTarget === persistentId && gameState.readyForCombat.some(rid => rid === gameState.turnOrder[gameState.activeIdx]))
                      ) && (
                            <div style={{ position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
-                              <button className="btn-ready" 
+                              <button className="btn-ready"
                                  style={{ animation: !gameState.readyForCombat.includes(persistentId) ? 'pulseGold 1.5s infinite' : 'none' }}
-                                 disabled={gameState.readyForCombat.includes(persistentId)} 
+                                 disabled={gameState.readyForCombat.includes(persistentId)}
                                  onClick={() => socket.emit('ready_for_combat', { roomId: gameState.id })}>
                                  {gameState.readyForCombat.includes(persistentId) ? '상대방 대기 중...' : '전투 준비'}
                               </button>
@@ -483,11 +485,11 @@ export default function App() {
 
                      {/* CLASH RESULT BANNER */}
                      {combatVisual?.status === 'resolving' && (
-                        <div className="battle-result-banner" style={{ 
-                           position: 'absolute', 
-                           top: '-100px', 
-                           left: '50%', 
-                           transform: 'translateX(-50%)', 
+                        <div className="battle-result-banner" style={{
+                           position: 'absolute',
+                           top: '-100px',
+                           left: '50%',
+                           transform: 'translateX(-50%)',
                            zIndex: 200,
                            animation: 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
                         }}>
@@ -577,8 +579,8 @@ export default function App() {
                <button className="btn" style={{ marginTop: '3rem' }} onClick={() => { setAppState('lobby'); setGameState(null); setRoomId(''); socket.emit('leave_room'); }}>로비로 돌아가기</button>
             </div>
          )}
-         
-        <style>{`
+
+         <style>{`
 .divine-visit-overlay {
   position: fixed;
   inset: 0;
@@ -928,7 +930,7 @@ function Card({ card, ownerId, onClick, onContextMenu, className, style, revealF
    if (isMasked) return <div className={`card ${className || ''}`} style={{ ...style, borderColor: '#444' }} onContextMenu={onContextMenu}><div className="card-back-v"></div></div>;
 
    return (
-      <div className={`card card-bg-${card.type} ${card.mergeCount > 1 ? 'merged' : ''} ${className || ''}`} data-merge={`+${card.mergeCount}`} 
+      <div className={`card card-bg-${card.type} ${card.mergeCount > 1 ? 'merged' : ''} ${className || ''}`} data-merge={`+${card.mergeCount}`}
          onClick={onClick} onContextMenu={onContextMenu} draggable={props.draggable} onDragStart={props.onDragStart} style={{ ...style, borderColor: color }}>
          <div className="card-header" style={{ fontSize: '0.6rem', color: color, position: 'absolute', top: '5px', left: '5px' }}>{card.type === 'attack' ? '공격' : card.type === 'defense' ? '방어' : '효과'}</div>
          <div className="card-item-name-mid">{card.name}</div>
