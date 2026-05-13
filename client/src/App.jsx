@@ -305,7 +305,7 @@ export default function App() {
                      if (!id) {
                         return (
                            <div key={`empty-${i}`} className="player-card-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '220px' }}>
-                              <div className="player-card empty-slot" style={{ width: '100%', height: '100%', minHeight: '350px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555', border: '2px dashed #444', borderRadius: '10px' }}>대기 중...</div>
+                              <div className="player-card empty-slot" style={{ width: '100%', flex: 1, minHeight: '350px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555', border: '4px dashed #444', borderRadius: '10px' }}>대기 중...</div>
                            </div>
                         );
                      }
@@ -317,7 +317,7 @@ export default function App() {
 
                      return (
                         <div key={id} className="player-card-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '220px' }}>
-                           <div className={`player-card ${p.ready ? 'ready' : ''}`} style={{ width: '100%' }}>
+                           <div className={`player-card ${p.ready ? 'ready' : ''}`} style={{ width: '100%', flex: 1 }}>
                               <div className="lobby-portrait" style={{ height: '250px', backgroundColor: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem', borderRadius: '8px 8px 0 0', overflow: 'hidden' }}>
                                  {char?.image ? (
                                     <img src={char.image} alt={char.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
