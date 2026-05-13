@@ -299,13 +299,13 @@ export default function App() {
                <button className="btn" style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 100, fontSize: '1.2rem', padding: '10px 20px' }} onClick={leaveRoom}>◀ BACK</button>
                <button className="room-id-badge clickable" style={{ position: 'absolute', top: '1rem', left: '50%', transform: 'translateX(-50%)', zIndex: 100, marginBottom: 0 }} onClick={() => navigator.clipboard.writeText(roomId)}>Room ID: <span style={{ color: 'var(--accent-gold)' }}>{roomId}</span></button>
 
-               <div className="portraits-row" style={{ justifyContent: 'center', marginTop: '6rem', alignItems: 'flex-start' }}>
+               <div className="portraits-row" style={{ justifyContent: 'center', marginTop: '6rem', alignItems: 'stretch' }}>
                   {Array.from({ length: gameState.maxPlayers }).map((_, i) => {
                      const id = gameState.turnOrder[i];
                      if (!id) {
                         return (
-                           <div key={`empty-${i}`} className="player-card empty-slot" style={{ width: '220px' }}>
-                              <div style={{ height: '300px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555', border: '2px dashed #444', borderRadius: '10px' }}>대기 중...</div>
+                           <div key={`empty-${i}`} className="player-card-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '220px' }}>
+                              <div className="player-card empty-slot" style={{ width: '100%', height: '100%', minHeight: '350px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#555', border: '2px dashed #444', borderRadius: '10px' }}>대기 중...</div>
                            </div>
                         );
                      }
