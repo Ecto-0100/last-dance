@@ -541,7 +541,7 @@ export default function App() {
                      <div className="popup-box" style={{ width: '80%', maxWidth: '800px' }}>
                         <h2 className="font-gothic text-center">카드 합성</h2>
                         <div className="hand-row" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                           {gameState.players[persistentId]?.hand.map(c => {
+                           {gameState.players[persistentId]?.hand.filter(c => c.type !== 'effect').map(c => {
                               const isSelected = selectedCards.find(sc => sc.id === c.id);
                               const isDisabled = selectedCards.length > 0 && (selectedCards[0].name !== c.name || selectedCards[0].type !== c.type || selectedCards[0].type === 'effect');
                               return (
@@ -885,7 +885,15 @@ export default function App() {
                      {isMeDefender && gameState.defenderPhaseStart && !gameState.slots?.def && !gameState.slots?.gaveUp &&
                         <button className="btn" style={{ color: 'var(--accent-red)' }} disabled={gameState.isResolving} onClick={giveUpDefense}>🏳️ 수비 포기</button>}
 
-                     {isMe && p.hand.length <= 2 && <button className="btn" style={{ color: 'crimson', borderColor: 'crimson' }} disabled={gameState.isResolving} onClick={() => { if (window.confirm('피의 계약: HP -25, 카드 2장 드로우. 진행하시겠습니까?')) socket.emit('execute_blood_pact', { roomId: gameState.id }); }}>🩸 피의 계약</button>}
+                     {isMe && p.hand.length <= 2 && <button className="btn" style={{ color: 'crimson', borderColor: 'crimson' }} disabled={gameState.isResolving} onClick={() => { 
+                        socket.emit('execute_blood_pact', { roomId: gameState.id }); 
+                        setDamageDealt({ playerId: persistentId, amount: 25 });
+                        setShakingPlayerId(persistentId);
+                        setTimeout(() => {
+                           setDamageDealt(null);
+                           setShakingPlayerId(null);
+                        }, 1500);
+                     }}>🩸 피의 계약</button>}
                   </div>
                   <div className="hand-container" style={{ display: 'flex', gap: '0.5rem' }}>
                      {p.hand.map(c => {
