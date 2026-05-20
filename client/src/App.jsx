@@ -10,6 +10,8 @@ const socket = io(SERVER_URL);
 import warriorImg from './assets/warrior.png';
 import crusaderImg from './assets/crusader.png';
 import assassinImg from './assets/assassin.png';
+import divineCardBackImg from './assets/divine_card_back.png';
+import eventCardBackImg from './assets/event_card_back.png';
 
 const HERO_CLASSES = [
    { id: 'warrior', name: '전사', desc: '전사의 기백: 현재 공격 카드에 공격력 +5.', icon: '⚔️', image: warriorImg },
@@ -537,7 +539,6 @@ export default function App() {
                            {combatVisual.result === 'draw' && <h1 style={{ color: '#888' }}>충돌!</h1>}
                         </div>
                      )}
-                     <div className="card-back-main" style={{ width: '80px', height: '110px', background: '#111', border: '1px solid #333' }}></div>
                      <div className="slot-container" style={{ textAlign: 'center' }}>
                         <div className={`card-slot def-slot ${gameState.slots?.def ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'def_win' ? 'defending-shield' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'draw' ? 'clashing-draw' : ''} ${combatVisual?.status === 'impacted' && (combatVisual.result === 'draw' || combatVisual.result === 'atk_win') ? 'shattering' : ''} ${combatVisual?.status === 'impacted' && combatVisual.result === 'def_win' ? 'flash-gold' : ''} ${(gameState.revealState === 'both') ? 'revealing' : ''}`}
                            onDragOver={e => e.preventDefault()}
@@ -826,8 +827,7 @@ export default function App() {
                </div>
                <div className={`divine-card-container ${divineFlipped ? 'flipped' : ''}`}>
                   <div className="divine-card-inner">
-                     <div className="divine-card-back">
-                        <div className="divine-seal">심연</div>
+                     <div className="divine-card-back" style={{ background: `url(${divineCardBackImg}) center/cover no-repeat`, border: '2px solid var(--accent-gold)', borderRadius: '12px' }}>
                      </div>
                      <div className="divine-card-front">
                         <div className="divine-card-front-content">
@@ -860,9 +860,7 @@ export default function App() {
                       {revealingEventCards.cards.map((card, i) => (
                          <div key={i} className="reveal-card-container">
                             <div className={`card-3d-inner ${flippedIndices.includes(i) ? 'flipped' : ''}`}>
-                               <div className="card-3d-back">
-                                  <div className="card-back-v"></div>
-                                  <div style={{ fontSize: '3rem', zIndex: 10, opacity: 0.6, color: '#555' }}>?</div>
+                               <div className="card-3d-back" style={{ background: `url(${eventCardBackImg}) center/cover no-repeat`, borderColor: env.color, borderWidth: '2px' }}>
                                </div>
                                <div className="card-3d-front" style={{ borderColor: env.color }}>
                                   <div className="card-header" style={{ fontSize: '0.6rem', color: env.color, position: 'absolute', top: '5px', left: '5px' }}>환경 보상</div>
@@ -1026,7 +1024,7 @@ export default function App() {
                      {isMeDefender && gameState.defenderPhaseStart && !gameState.slots?.def && !gameState.slots?.gaveUp &&
                         <button className="btn" style={{ color: 'var(--accent-red)' }} disabled={gameState.isResolving} onClick={giveUpDefense}>🏳️ 수비 포기</button>}
 
-                     {isMe && p.hand.length <= 2 && <button className="btn" style={{ color: 'crimson', borderColor: 'crimson' }} disabled={gameState.isResolving} onClick={() => {
+                     {isMe && p.hand.length <= 2 && <button className="btn" style={{ color: 'crimson', borderColor: 'crimson' }} disabled={gameState.isResolving || p.hand.length >= 10} onClick={() => {
                         socket.emit('execute_blood_pact', { roomId: gameState.id });
                         setDamageDealt({ playerId: persistentId, amount: 25 });
                         setShakingPlayerId(persistentId);

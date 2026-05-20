@@ -54,6 +54,9 @@ const getSanitizedState = (room, forPlayerId) => {
   const sanitized = JSON.parse(JSON.stringify(room));
   if (!sanitized.slots) return sanitized;
 
+  // During resolution (combat animations), never mask — cards should stay visible
+  if (room.isResolving) return sanitized;
+
   const revealAtk = room.revealState === 'attacker' || room.revealState === 'both';
   const revealDef = room.revealState === 'both' || sanitized.slots.gaveUp;
 
@@ -346,7 +349,7 @@ io.on('connection', (socket) => {
           break;
         case EFFECT_SUBTYPES.HASTE:
           for (let i = 0; i < 2; i++) {
-            if (room.deck.length > 0) p.hand.push(room.deck.pop());
+            if (room.deck.length > 0 && p.hand.length < 10) p.hand.push(room.deck.pop());
           }
           room.logs.push(`[아이템] ${p.name}이(가) 신속을 사용했습니다! (카드 2장 드로우)`);
           break;
@@ -494,7 +497,7 @@ io.on('connection', (socket) => {
     room.logs.push(`${p.name} activated Blood Pact (-${cost} HP).`);
 
     for (let i = 0; i < 2; i++) {
-      if (room.deck.length > 0) p.hand.push(room.deck.pop());
+      if (room.deck.length > 0 && p.hand.length < 10) p.hand.push(room.deck.pop());
     }
 
     room.lastActivity = Date.now();
@@ -1068,7 +1071,7 @@ function triggerEnvironmentalEvent(room, forcedChoice) {
     const randomCard = pool[Math.floor(Math.random() * pool.length)];
     const actualCard = { ...randomCard, id: `ev_draw_${p.id}_${Math.random().toString(36)}` };
 
-    p.hand.push(actualCard);
+    if (p.hand.length < 10) p.hand.push(actualCard);
 
     const socketId = playerToSocket[p.id];
     if (socketId) {
