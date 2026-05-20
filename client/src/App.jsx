@@ -24,6 +24,22 @@ const ROULETTE_OPTIONS = [
    { id: 'cursed_land', label: 'Event: Cursed Land', icon: '💀' },
    { id: 'dud', label: 'Kwang! (Nothing)', icon: '💨' }
 ];
+const getEnvironmentDetails = (evt) => {
+   switch (evt) {
+      case 'blessed_land':
+         return { title: '축복받은 땅', icon: '☀️', color: 'var(--accent-gold)', desc: '빛의 성령이 대지를 축복하며 신성한 카드가 지급되었습니다.' };
+      case 'cursed_land':
+         return { title: '저주받은 땅', icon: '💀', color: 'var(--accent-red)', desc: '심연의 저주가 대지를 감싸며 불길한 카드가 지급되었습니다.' };
+      case 'abyssal_fog':
+         return { title: '심연의 안개', icon: '🌫️', color: '#a080ff', desc: '자욱한 환각의 안개 속에서 몽환적인 카드가 지급되었습니다.' };
+      case 'golden_age':
+         return { title: '황금기', icon: '👑', color: '#ffd700', desc: '번영과 찬란한 황금의 축복과 함께 풍요로운 카드가 지급되었습니다.' };
+      case 'blood_festival':
+         return { title: '피의 축제', icon: '🩸', color: '#ff3b30', desc: '대지에 흐르는 피와 격노의 소용돌이 속에서 살육의 카드가 지급되었습니다.' };
+      default:
+         return { title: '미지의 차원', icon: '🔮', color: '#fff', desc: '차원의 격변이 일어나며 정체불명의 카드가 지급되었습니다.' };
+   }
+};
 
 export default function App() {
    const [appState, setAppState] = useState('title');
@@ -63,6 +79,8 @@ export default function App() {
    const [divineFlipped, setDivineFlipped] = useState(false);
    const [revealingEventCards, setRevealingEventCards] = useState(null);
    const [flippedIndices, setFlippedIndices] = useState([]);
+   const [isEnvironmentShaking, setIsEnvironmentShaking] = useState(false);
+   const [showEnvironmentWave, setShowEnvironmentWave] = useState(null);
 
    const [tick, setTick] = useState(0);
    useEffect(() => {
@@ -153,10 +171,23 @@ export default function App() {
       };
 
       const handleEnvironmentDraw = ({ event, cards }) => {
-         setRevealingEventCards({ event, cards });
-         setFlippedIndices([]);
-         setTimeout(() => setFlippedIndices([0]), 1000);
-         setTimeout(() => setRevealingEventCards(null), 5000);
+         setIsEnvironmentShaking(true);
+         setTimeout(() => setIsEnvironmentShaking(false), 1000);
+
+         setShowEnvironmentWave(event);
+         setTimeout(() => setShowEnvironmentWave(null), 1800);
+
+         setTimeout(() => {
+            setRevealingEventCards({ event, cards });
+            setFlippedIndices([]);
+            cards.forEach((_, index) => {
+               setTimeout(() => {
+                  setFlippedIndices(prev => [...prev, index]);
+               }, 1000 + index * 600);
+            });
+         }, 500);
+
+         setTimeout(() => setRevealingEventCards(null), 6500);
       };
 
       socket.on('connect', handleConnect);
@@ -234,7 +265,10 @@ export default function App() {
    const fieldClass = gameState?.fieldEvent ? `field-${gameState.fieldEvent}` : '';
 
    return (
-      <div className={`screen-container ${fieldClass} ${bloodFlash ? 'blood-flash-active' : ''}`}>
+      <div className={`screen-container ${fieldClass} ${bloodFlash ? 'blood-flash-active' : ''} ${isEnvironmentShaking ? 'environment-heavy-shake' : ''}`}>
+         {showEnvironmentWave && (
+            <div className={`environmental-wave-overlay ${showEnvironmentWave}`} />
+         )}
          {errorMsg && <div className="error-toast">{errorMsg}</div>}
 
          {appState === 'title' && (
@@ -806,28 +840,46 @@ export default function App() {
          )}
 
          {/* EVENT REVEAL OVERLAY */}
-         {revealingEventCards && (
-            <div className="event-reveal-overlay">
-               <div style={{ position: 'absolute', top: '10%', textAlign: 'center' }}>
-                  <h1 className="font-gothic" style={{ color: revealingEventCards.event === 'blessed_land' ? 'var(--accent-gold)' : 'var(--accent-red)', fontSize: '3rem' }}>
-                     {revealingEventCards.event === 'blessed_land' ? '☀️ 축복받은 땅' : '💀 저주받은 땅'}
-                  </h1>
-                  <p>환경 보상: 특별한 카드가 지급되었습니다.</p>
-               </div>
-               {revealingEventCards.cards.map((card, i) => (
-                  <div key={i} className="reveal-card-container">
-                     <div className={`card-3d-inner ${flippedIndices.includes(i) ? 'flipped' : ''}`}>
-                        <div className="card-3d-back">?</div>
-                        <div className="card-3d-front">
-                           <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>{card?.name || 'Unknown Item'}</div>
-                           <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>{card?.desc || 'A mysterious gift from the Holy Spirit...'}</div>
-                           <div style={{ marginTop: 'auto', textAlign: 'right', fontSize: '1rem', fontWeight: 'bold' }}>Val: {card?.value || 0}</div>
-                        </div>
-                     </div>
-                  </div>
-               ))}
-            </div>
-         )}
+          {revealingEventCards && (() => {
+             const env = getEnvironmentDetails(revealingEventCards.event);
+             return (
+                <div className="event-reveal-overlay">
+                   <div className="event-banner-container">
+                      <div className="blink-glow" style={{ fontSize: '4.5rem', textShadow: `0 0 25px ${env.color}`, animation: 'floatEffect 3s ease-in-out infinite' }}>
+                         {env.icon}
+                      </div>
+                      <h1 className="font-gothic" style={{ color: env.color, fontSize: '3.5rem', letterSpacing: '4px', textShadow: `0 0 20px ${env.color}`, marginTop: '0.5rem' }}>
+                         {env.title}
+                      </h1>
+                      <p style={{ color: '#ccc', fontSize: '1.1rem', letterSpacing: '1px', marginTop: '0.5rem', opacity: 0.9 }}>
+                         {env.desc}
+                      </p>
+                   </div>
+                   <div style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', width: '100%' }}>
+                      {revealingEventCards.cards.map((card, i) => (
+                         <div key={i} className="reveal-card-container">
+                            <div className={`card-3d-inner ${flippedIndices.includes(i) ? 'flipped' : ''}`}>
+                               <div className="card-3d-back">
+                                  <div className="card-back-v"></div>
+                                  <div style={{ fontSize: '3rem', zIndex: 10, opacity: 0.6, color: '#555' }}>?</div>
+                               </div>
+                               <div className="card-3d-front" style={{ borderColor: env.color }}>
+                                  <div className="card-header" style={{ fontSize: '0.6rem', color: env.color, position: 'absolute', top: '5px', left: '5px' }}>환경 보상</div>
+                                  <div className="card-item-name-mid" style={{ fontSize: '1.2rem', color: '#fff', textShadow: '0 0 5px rgba(255,255,255,0.3)' }}>{card?.name || '신비한 카드'}</div>
+                                  <div style={{ fontSize: '0.85rem', color: '#aaa', padding: '0 10px', textAlign: 'center', margin: 'auto 0 20px 0', lineHeight: '1.4' }}>
+                                     {card?.desc || '고유한 전장의 기운을 품고 있는 특별한 장비.'}
+                                  </div>
+                                  <div className="card-value-bottom stat-boosted" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', bottom: '15px' }}>
+                                     {card?.value || 0}
+                                  </div>
+                               </div>
+                            </div>
+                         </div>
+                      ))}
+                   </div>
+                </div>
+             );
+          })()}
 
          {inspectedHero && (
             <div className="inspect-overlay" onClick={() => setInspectedHero(null)}>

@@ -1378,25 +1378,121 @@ body {
 .event-reveal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.9) 30%, rgba(0, 0, 0, 0.98) 100%);
+  backdrop-filter: blur(10px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
-  z-index: 1100;
+  z-index: 5000;
+  animation: fadeIn 0.4s ease;
+}
+
+.event-banner-container {
+  width: 100%;
+  padding: 2.5rem 0;
+  background: linear-gradient(90deg, transparent, rgba(20, 20, 20, 0.95) 15%, rgba(20, 20, 20, 0.95) 85%, transparent);
+  border-top: 2px solid var(--accent-gold);
+  border-bottom: 2px solid var(--accent-gold);
+  box-shadow: 0 0 35px rgba(195, 160, 94, 0.15);
+  text-align: center;
+  margin-bottom: 3.5rem;
+  transform: scaleY(0);
+  animation: bannerExpand 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  position: relative;
+}
+
+.event-banner-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  box-shadow: 0 0 10px #fff;
+}
+
+@keyframes bannerExpand {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes floatEffect {
+  0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4)); }
+  50% { transform: translateY(-10px) scale(1.05); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); }
+  100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4)); }
+}
+
+/* Environment Shake & Sweep Wave */
+.environment-heavy-shake {
+  animation: heavy-shake 0.8s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes heavy-shake {
+  10%, 90% { transform: translate3d(-3px, 3px, 0) rotate(-0.5deg); }
+  20%, 80% { transform: translate3d(6px, -3px, 0) rotate(1deg); }
+  30%, 50%, 70% { transform: translate3d(-9px, 6px, 0) rotate(-1.5deg); }
+  40%, 60% { transform: translate3d(9px, -6px, 0) rotate(1.5deg); }
+}
+
+.environmental-wave-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  mix-blend-mode: color-dodge;
+  opacity: 0;
+  animation: sweepWave 1.8s ease-in-out forwards;
+}
+
+.environmental-wave-overlay.blessed_land {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 215, 0, 0.8) 50%, transparent 100%);
+}
+.environmental-wave-overlay.cursed_land {
+  background: linear-gradient(90deg, transparent 0%, rgba(138, 43, 226, 0.8) 50%, transparent 100%);
+}
+.environmental-wave-overlay.abyssal_fog {
+  background: linear-gradient(90deg, transparent 0%, rgba(100, 100, 255, 0.7) 50%, transparent 100%);
+}
+.environmental-wave-overlay.golden_age {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 223, 0, 0.9) 50%, transparent 100%);
+}
+.environmental-wave-overlay.blood_festival {
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 0, 0.85) 50%, transparent 100%);
+}
+
+@keyframes sweepWave {
+  0% {
+    transform: translateX(-100vw) skewX(-20deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw) skewX(-20deg);
+    opacity: 0;
+  }
 }
 
 .reveal-card-container {
   width: 180px;
   height: 260px;
   perspective: 1000px;
+  animation: cardEntrance 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes cardEntrance {
+  from { transform: translateY(120px) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .card-3d-inner {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.6s;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
 }
 
@@ -1419,31 +1515,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
-  color: #555;
+  position: relative;
 }
 
 .card-3d-front {
-  background: #111;
+  background: #0d0d0d;
   transform: rotateY(180deg);
   display: flex;
   flex-direction: column;
   padding: 15px;
-  border-color: var(--accent-gold);
+  border-width: 3px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes draw-in {
-  from {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-draw {
-  animation: draw-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+.card-3d-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02) 0%, transparent 80%);
+  pointer-events: none;
 }
