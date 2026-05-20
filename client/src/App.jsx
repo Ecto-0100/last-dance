@@ -263,6 +263,7 @@ export default function App() {
    };
 
    const fieldClass = gameState?.fieldEvent ? `field-${gameState.fieldEvent}` : '';
+   const hideResolvedSlots = gameState?.isResolving && !isRevealing;
 
    return (
       <div className={`screen-container ${fieldClass} ${bloodFlash ? 'blood-flash-active' : ''} ${isEnvironmentShaking ? 'environment-heavy-shake' : ''}`}>
@@ -485,7 +486,7 @@ export default function App() {
                            }}
                            style={{ '--tx': getTargetOffset(combatVisual?.defenderId).x + 'px', '--ty': getTargetOffset(combatVisual?.defenderId).y + 'px' }}
                         >
-                           {gameState.slots?.atk && (
+                           {gameState.slots?.atk && !hideResolvedSlots && (
                               <Card
                                  card={gameState.slots.atk.card}
                                  ownerId={gameState.slots.atk.ownerId}
@@ -507,7 +508,7 @@ export default function App() {
                         </div>
                         <span className="font-gothic" style={{ fontSize: '0.8rem' }}>공격석</span>
                      </div>
-                     {gameState.phase === 'battle' && gameState.slots?.atk && gameState.readyForCombat.length < 2 && (
+                     {gameState.phase === 'battle' && gameState.slots?.atk && !gameState.isResolving && !gameState.slots?.gaveUp && gameState.readyForCombat.length < 2 && (
                         (gameState.turnOrder[gameState.activeIdx] === persistentId) ||
                         (gameState.currentTarget === persistentId && gameState.readyForCombat.some(rid => rid === gameState.turnOrder[gameState.activeIdx]))
                      ) && (
@@ -545,7 +546,7 @@ export default function App() {
                               if (cardData.type === 'defense') socket.emit('submit_card', { cardId: cardData.id, type: 'defense', roomId: gameState.id });
                            }}
                         >
-                           {gameState.slots?.def && (
+                           {gameState.slots?.def && !hideResolvedSlots && (
                               <Card
                                  card={gameState.slots.def.card}
                                  ownerId={gameState.slots.def.ownerId}
