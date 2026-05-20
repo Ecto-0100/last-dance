@@ -265,7 +265,7 @@ export default function App() {
    };
 
    const fieldClass = gameState?.fieldEvent ? `field-${gameState.fieldEvent}` : '';
-   const hideResolvedSlots = gameState?.isResolving && !isRevealing;
+   const hideResolvedSlots = gameState?.isResolving && !isRevealing && !gameState?.revealState;
 
    return (
       <div className={`screen-container ${fieldClass} ${bloodFlash ? 'blood-flash-active' : ''} ${isEnvironmentShaking ? 'environment-heavy-shake' : ''}`}>
