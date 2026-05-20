@@ -809,14 +809,17 @@ body {
 
 @keyframes fly-to-target {
   0% {
-    transform: translate(0, 0) scale(1);
-    z-index: 100;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0);
+    z-index: 1000;
   }
-
+  50% {
+    box-shadow: 0 0 35px rgba(255, 0, 0, 0.8);
+  }
   100% {
-    transform: translate(var(--tx), var(--ty)) scale(0.1);
-    opacity: 0;
-    z-index: 100;
+    transform: translate(var(--tx), var(--ty)) scale(0.3) rotate(360deg);
+    opacity: 0.1;
+    z-index: 1000;
   }
 }
 
@@ -824,11 +827,92 @@ body {
   animation: clash-shake 0.2s infinite;
 }
 
+/* Optimized Attacker Slot Clash Sequence */
+.card-slot.atk-slot.clashing {
+  animation: atk-clash-sequence 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes atk-clash-sequence {
+  0%, 45% { transform: translate(0, 0) rotate(0deg); }
+  10%, 30% { transform: translate(-3px, 2px) rotate(-1.5deg); }
+  20%, 40% { transform: translate(3px, -2px) rotate(1.5deg); }
+  55% { transform: translate(-25px, 0) rotate(-4deg) scale(0.93); }
+  75% { transform: translate(55px, 0) rotate(6deg) scale(1.18); filter: brightness(1.8) contrast(1.2); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Optimized Defender Slot Clash Sequence */
+.card-slot.def-slot.clashing {
+  animation: def-clash-sequence 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes def-clash-sequence {
+  0%, 45% { transform: translate(0, 0) rotate(0deg); }
+  10%, 30% { transform: translate(3px, -2px) rotate(1.5deg); }
+  20%, 40% { transform: translate(-3px, 2px) rotate(-1.5deg); }
+  55% { transform: translate(25px, 0) rotate(4deg) scale(0.93); }
+  75% { transform: translate(-55px, 0) rotate(-6deg) scale(1.18); filter: brightness(1.8) contrast(1.2); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
 .projectile {
   position: absolute;
   z-index: 1000;
   pointer-events: none;
-  animation: fly-to-target 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+  animation: fly-to-target 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Deflection Animation: Attacker card bounces backward */
+.card-slot.atk-slot.deflected {
+  animation: deflect-bounce 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes deflect-bounce {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  15% {
+    transform: translate(80px, -5px) scale(1.08) rotate(12deg);
+    filter: brightness(2) contrast(1.3);
+  }
+  100% {
+    transform: translate(-180px, 240px) scale(0.5) rotate(-220deg);
+    opacity: 0;
+    filter: brightness(0.1);
+  }
+}
+
+/* Defending Shield Animation: Defender card blocks attack */
+.card-slot.def-slot.defending-shield {
+  animation: shield-block 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  box-shadow: 0 0 35px rgba(74, 158, 255, 0.9);
+  border-color: #4a9eff !important;
+}
+
+@keyframes shield-block {
+  0% { transform: scale(1); filter: brightness(1); }
+  25% { transform: scale(1.15) translate(-15px, 0); filter: brightness(2.2); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Draw Slidings: Both cards hit each other in the center */
+.card-slot.atk-slot.clashing-draw {
+  animation: draw-atk-slide 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+.card-slot.def-slot.clashing-draw {
+  animation: draw-def-slide 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes draw-atk-slide {
+  0% { transform: translate(0, 0); }
+  35% { transform: translate(45px, 0) scale(1.1); filter: brightness(1.6); }
+  100% { transform: translate(45px, 0) scale(1.1); filter: brightness(1.6); }
+}
+
+@keyframes draw-def-slide {
+  0% { transform: translate(0, 0); }
+  35% { transform: translate(-45px, 0) scale(1.1); filter: brightness(1.6); }
+  100% { transform: translate(-45px, 0) scale(1.1); filter: brightness(1.6); }
 }
 
 .timeout-timer {

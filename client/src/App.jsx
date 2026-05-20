@@ -155,9 +155,9 @@ export default function App() {
                   setIsRevealing(false);
                   setDamageDealt(null);
                   setShakingPlayerId(null);
-               }, 1000);
-            }, 500);
-         }, 1000);
+               }, 850);
+            }, 350);
+         }, 600);
       };
       const handleGameOver = ({ gameState: gs }) => { setGameState(gs); setAppState('victory'); };
       const handleKicked = () => { alert("방장에 의해 강퇴되었습니다."); setAppState('lobby'); setGameState(null); setShowPopup(false); };
@@ -477,7 +477,7 @@ export default function App() {
                   })()}
                   <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'relative' }}>
                      <div className="slot-container" style={{ textAlign: 'center' }}>
-                        <div className={`card-slot atk-slot ${gameState.slots?.atk ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'atk_win' ? 'projectile' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'def_win' ? 'deflected' : ''} ${combatVisual?.status === 'impacted' && (combatVisual.result === 'atk_win' || combatVisual.result === 'def_win') ? 'invisible-card' : ''} ${combatVisual?.status === 'impacted' && combatVisual.result === 'draw' ? 'shattering' : ''} ${(gameState.revealState === 'attacker' || gameState.revealState === 'both') ? 'revealing' : ''}`}
+                        <div className={`card-slot atk-slot ${gameState.slots?.atk ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'atk_win' ? 'projectile' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'def_win' ? 'deflected' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'draw' ? 'clashing-draw' : ''} ${combatVisual?.status === 'impacted' && (combatVisual.result === 'atk_win' || combatVisual.result === 'def_win') ? 'invisible-card' : ''} ${combatVisual?.status === 'impacted' && combatVisual.result === 'draw' ? 'shattering' : ''} ${(gameState.revealState === 'attacker' || gameState.revealState === 'both') ? 'revealing' : ''}`}
                            onDragOver={e => e.preventDefault()}
                            onDrop={e => {
                               const cardData = JSON.parse(e.dataTransfer.getData("card"));
@@ -538,7 +538,7 @@ export default function App() {
                      )}
                      <div className="card-back-main" style={{ width: '80px', height: '110px', background: '#111', border: '1px solid #333' }}></div>
                      <div className="slot-container" style={{ textAlign: 'center' }}>
-                        <div className={`card-slot def-slot ${gameState.slots?.def ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'impacted' && (combatVisual.result === 'draw' || combatVisual.result === 'atk_win') ? 'shattering' : ''} ${combatVisual?.status === 'impacted' && combatVisual.result === 'def_win' ? 'flash-gold' : ''} ${(gameState.revealState === 'both') ? 'revealing' : ''}`}
+                        <div className={`card-slot def-slot ${gameState.slots?.def ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'def_win' ? 'defending-shield' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'draw' ? 'clashing-draw' : ''} ${combatVisual?.status === 'impacted' && (combatVisual.result === 'draw' || combatVisual.result === 'atk_win') ? 'shattering' : ''} ${combatVisual?.status === 'impacted' && combatVisual.result === 'def_win' ? 'flash-gold' : ''} ${(gameState.revealState === 'both') ? 'revealing' : ''}`}
                            onDragOver={e => e.preventDefault()}
                            onDrop={e => {
                               const cardData = JSON.parse(e.dataTransfer.getData("card"));
