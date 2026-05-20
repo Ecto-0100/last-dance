@@ -121,21 +121,24 @@ export default function App() {
          setIsRevealing(true);
          setCombatVisual({ status: 'clashing', ...result });
          animationTimer.current = setTimeout(() => {
-            setCombatVisual(prev => ({ ...prev, status: 'resolving' }));
-            if (result.defDamage > 0) {
-               setDamageDealt({ playerId: result.defenderId, amount: result.defDamage });
-               setShakingPlayerId(result.defenderId);
-            }
-            if (result.atkDamage > 0) {
-               setDamageDealt({ playerId: result.attackerId, amount: result.atkDamage });
-               setShakingPlayerId(result.attackerId);
-            }
+            setCombatVisual(prev => ({ ...prev, status: 'flying' }));
             animationTimer.current = setTimeout(() => {
-               setCombatVisual(null);
-               setIsRevealing(false);
-               setDamageDealt(null);
-               setShakingPlayerId(null);
-            }, 1500);
+               setCombatVisual(prev => ({ ...prev, status: 'impacted' }));
+               if (result.defDamage > 0) {
+                  setDamageDealt({ playerId: result.defenderId, amount: result.defDamage });
+                  setShakingPlayerId(result.defenderId);
+               }
+               if (result.atkDamage > 0) {
+                  setDamageDealt({ playerId: result.attackerId, amount: result.atkDamage });
+                  setShakingPlayerId(result.attackerId);
+               }
+               animationTimer.current = setTimeout(() => {
+                  setCombatVisual(null);
+                  setIsRevealing(false);
+                  setDamageDealt(null);
+                  setShakingPlayerId(null);
+               }, 1000);
+            }, 500);
          }, 1000);
       };
       const handleGameOver = ({ gameState: gs }) => { setGameState(gs); setAppState('victory'); };
@@ -440,7 +443,7 @@ export default function App() {
                   })()}
                   <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'relative' }}>
                      <div className="slot-container" style={{ textAlign: 'center' }}>
-                        <div className={`card-slot atk-slot ${gameState.slots?.atk ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'resolving' && combatVisual.result === 'draw' ? 'shattering' : ''} ${combatVisual?.status === 'resolving' && combatVisual.result === 'def_win' ? 'deflected' : ''} ${combatVisual?.status === 'resolving' && combatVisual.result === 'atk_win' ? 'projectile' : ''} ${(gameState.revealState === 'attacker' || gameState.revealState === 'both') ? 'revealing' : ''}`}
+                        <div className={`card-slot atk-slot ${gameState.slots?.atk ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'atk_win' ? 'projectile' : ''} ${combatVisual?.status === 'flying' && combatVisual.result === 'def_win' ? 'deflected' : ''} ${combatVisual?.status === 'impacted' && (combatVisual.result === 'atk_win' || combatVisual.result === 'def_win') ? 'invisible-card' : ''} ${combatVisual?.status === 'impacted' && combatVisual.result === 'draw' ? 'shattering' : ''} ${(gameState.revealState === 'attacker' || gameState.revealState === 'both') ? 'revealing' : ''}`}
                            onDragOver={e => e.preventDefault()}
                            onDrop={e => {
                               const cardData = JSON.parse(e.dataTransfer.getData("card"));
@@ -485,7 +488,7 @@ export default function App() {
                         )}
 
                      {/* CLASH RESULT BANNER */}
-                     {combatVisual?.status === 'resolving' && (
+                     {(combatVisual?.status === 'impacted' || combatVisual?.status === 'flying') && (
                         <div className="battle-result-banner" style={{
                            position: 'absolute',
                            top: '-100px',
@@ -501,7 +504,7 @@ export default function App() {
                      )}
                      <div className="card-back-main" style={{ width: '80px', height: '110px', background: '#111', border: '1px solid #333' }}></div>
                      <div className="slot-container" style={{ textAlign: 'center' }}>
-                        <div className={`card-slot def-slot ${gameState.slots?.def ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'resolving' && combatVisual.result === 'draw' ? 'shattering' : ''} ${combatVisual?.status === 'resolving' && combatVisual.result === 'def_win' ? 'flash-gold' : ''} ${combatVisual?.status === 'resolving' && combatVisual.result === 'atk_win' ? 'shattering' : ''} ${(gameState.revealState === 'both') ? 'revealing' : ''}`}
+                        <div className={`card-slot def-slot ${gameState.slots?.def ? '' : 'empty'} ${combatVisual?.status === 'clashing' ? 'clashing' : ''} ${combatVisual?.status === 'impacted' && (combatVisual.result === 'draw' || combatVisual.result === 'atk_win') ? 'shattering' : ''} ${combatVisual?.status === 'impacted' && combatVisual.result === 'def_win' ? 'flash-gold' : ''} ${(gameState.revealState === 'both') ? 'revealing' : ''}`}
                            onDragOver={e => e.preventDefault()}
                            onDrop={e => {
                               const cardData = JSON.parse(e.dataTransfer.getData("card"));
@@ -604,6 +607,7 @@ export default function App() {
   width: 320px;
   height: 480px;
   perspective: 1000px;
+  animation: divineSlideAndThump 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 .divine-card-inner {
@@ -649,6 +653,28 @@ export default function App() {
   transform: rotateY(180deg);
 }
 
+.divine-card-front-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.divine-card-container.flipped .divine-card-front-content {
+  clip-path: inset(0 0 0 0);
+  transition-delay: 0.6s;
+}
+
+.invisible-card {
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
 .event-title {
   color: var(--accent-gold);
   font-size: 2.5rem;
@@ -662,6 +688,36 @@ export default function App() {
   color: #fff;
   opacity: 0.9;
   text-align: center;
+}
+
+@keyframes divineSlideAndThump {
+  0% {
+    transform: translateY(-100vh) scale(0.8);
+    opacity: 0;
+  }
+  40% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  /* First Heartbeat */
+  50% {
+    transform: translateY(0) scale(1.15);
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+  }
+  58% {
+    transform: translateY(0) scale(1);
+  }
+  /* Second Heartbeat */
+  66% {
+    transform: translateY(0) scale(1.15);
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+  }
+  74% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes slideInDown {
@@ -739,8 +795,10 @@ export default function App() {
                         <div className="divine-seal">심연</div>
                      </div>
                      <div className="divine-card-front">
-                        <h1 className="font-gothic event-title">{divineVisit.title}</h1>
-                        <p className="event-desc">{divineVisit.desc}</p>
+                        <div className="divine-card-front-content">
+                           <h1 className="font-gothic event-title">{divineVisit.title}</h1>
+                           <p className="event-desc">{divineVisit.desc}</p>
+                        </div>
                      </div>
                   </div>
                </div>
@@ -961,9 +1019,8 @@ function Card({ card, ownerId, onClick, onContextMenu, className, style, revealF
    const color = card.type === 'attack' ? 'var(--accent-red)' : (card.type === 'defense' ? 'steelblue' : 'var(--accent-gold)');
    const isMasked = (card.isMasked || isFogged) && !revealForce;
 
-   const gameState = props.contextGameState; // We might need this, but let's try direct calculation in parent
    const displayValue = props.displayValue || card.value;
-   const isBuffed = props.isBuffed;
+   const isStatIncreased = props.isBuffed || (card.mergeCount > 1);
 
    if (isMasked) return <div className={`card ${className || ''}`} style={{ ...style, borderColor: '#444' }} onContextMenu={onContextMenu}><div className="card-back-v"></div></div>;
 
@@ -972,7 +1029,7 @@ function Card({ card, ownerId, onClick, onContextMenu, className, style, revealF
          onClick={onClick} onContextMenu={onContextMenu} draggable={props.draggable} onDragStart={props.onDragStart} style={{ ...style, borderColor: color }}>
          <div className="card-header" style={{ fontSize: '0.6rem', color: color, position: 'absolute', top: '5px', left: '5px' }}>{card.type === 'attack' ? '공격' : card.type === 'defense' ? '방어' : '효과'}</div>
          <div className="card-item-name-mid">{card.name}</div>
-         <div className={`card-value-bottom ${isBuffed ? 'stat-boosted' : ''}`} style={{ color: !isBuffed ? color : 'inherit' }}>
+         <div className={`card-value-bottom ${isStatIncreased ? 'stat-boosted' : ''}`} style={{ color: !isStatIncreased ? color : 'inherit' }}>
             {displayValue}
          </div>
       </div>
