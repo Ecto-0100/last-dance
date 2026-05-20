@@ -846,13 +846,13 @@ export default function App() {
              return (
                 <div className="event-reveal-overlay">
                    <div className="event-banner-container">
-                      <div className="blink-glow" style={{ fontSize: '4.5rem', textShadow: `0 0 25px ${env.color}`, animation: 'floatEffect 3s ease-in-out infinite' }}>
+                      <div className="blink-glow" style={{ fontSize: '2.5rem', textShadow: `0 0 20px ${env.color}`, animation: 'floatEffect 3s ease-in-out infinite' }}>
                          {env.icon}
                       </div>
-                      <h1 className="font-gothic" style={{ color: env.color, fontSize: '3.5rem', letterSpacing: '4px', textShadow: `0 0 20px ${env.color}`, marginTop: '0.5rem' }}>
+                      <h1 className="font-gothic" style={{ color: env.color, fontSize: '2rem', letterSpacing: '3px', textShadow: `0 0 15px ${env.color}`, marginTop: '0.3rem' }}>
                          {env.title}
                       </h1>
-                      <p style={{ color: '#ccc', fontSize: '1.1rem', letterSpacing: '1px', marginTop: '0.5rem', opacity: 0.9 }}>
+                      <p style={{ color: '#ccc', fontSize: '0.95rem', letterSpacing: '1px', marginTop: '0.2rem', opacity: 0.9 }}>
                          {env.desc}
                       </p>
                    </div>
@@ -862,7 +862,7 @@ export default function App() {
                             <div className={`card-3d-inner ${flippedIndices.includes(i) ? 'flipped' : ''}`}>
                                <div className="card-3d-back" style={{ background: `url(${eventCardBackImg}) center/cover no-repeat`, borderColor: env.color, borderWidth: '2px' }}>
                                </div>
-                               <div className="card-3d-front" style={{ borderColor: env.color }}>
+                               <div className={`card-3d-front card-bg-${card?.type}`} style={{ borderColor: env.color }}>
                                   <div className="card-header" style={{ fontSize: '0.6rem', color: env.color, position: 'absolute', top: '5px', left: '5px' }}>환경 보상</div>
                                   <div className="card-item-name-mid" style={{ fontSize: '1.2rem', color: '#fff', textShadow: '0 0 5px rgba(255,255,255,0.3)' }}>{card?.name || '신비한 카드'}</div>
                                   <div style={{ fontSize: '0.85rem', color: '#aaa', padding: '0 10px', textAlign: 'center', margin: 'auto 0 20px 0', lineHeight: '1.4' }}>
@@ -994,7 +994,7 @@ export default function App() {
                </div>
 
                <div className={`char-portrait char-style-${Math.max(0, gameState.turnOrder.indexOf(id))}`}
-                  style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', filter: p.hp <= 0 ? 'grayscale(1)' : 'none', background: char?.image ? `url(${char.image}) center/cover no-repeat` : 'rgba(0,0,0,0.3)', borderRadius: '50%', border: '2px solid var(--accent-gold)' }}
+                  style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', filter: p.hp <= 0 ? 'grayscale(1)' : 'none', background: char?.image ? `url(${char.image}) center/cover no-repeat` : 'rgba(0,0,0,0.3)', borderRadius: '50%' }}
                   onContextMenu={(e) => { e.preventDefault(); setInspectedHero({ player: p, heroClass: char }); }}
                >
                   {!char?.image && char?.icon}

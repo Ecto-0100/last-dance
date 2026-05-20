@@ -511,12 +511,24 @@ body {
 
 /* CHARACTER STYLES (Using image fallbacks) */
 .char-portrait {
-  border: 2px solid #333;
-  transition: all 0.3s;
+  border: 3px solid var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.85), 0 8px 25px rgba(0, 0, 0, 0.7);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   overflow: hidden;
   background-size: cover !important;
   background-position: top center !important;
-  background-blend-mode: multiply !important;
+}
+
+.player-profile.active .char-portrait {
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.9), 0 0 25px var(--accent-gold) !important;
+  transform: scale(1.05);
+}
+
+.player-profile.targeted .char-portrait {
+  border-color: var(--accent-red) !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.9), 0 0 25px var(--accent-red) !important;
+  transform: scale(1.05);
 }
 
 .char-style-0 {
@@ -599,26 +611,32 @@ body {
 
 .player-profile {
   cursor: pointer;
-  padding: 10px;
-  border-radius: 10px;
-  transition: all 0.3s;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid transparent;
+  padding: 15px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  background: rgba(10, 10, 15, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .player-profile:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #444;
+  background: rgba(25, 25, 35, 0.85);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .player-profile.active {
-  box-shadow: 0 0 20px rgba(195, 160, 94, 0.2);
+  background: rgba(20, 18, 12, 0.75);
+  box-shadow: 0 0 25px rgba(195, 160, 94, 0.35);
   border-color: var(--accent-gold);
 }
 
 .player-profile.targeted {
+  background: rgba(25, 10, 10, 0.75);
   animation: shake 0.5s infinite;
   border-color: var(--accent-red);
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.35);
 }
 
 .hand-container {
@@ -630,6 +648,23 @@ body {
 
 .hand-container::-webkit-scrollbar {
   display: none;
+}
+
+.hand-container .card {
+  animation: cardDrawIn 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes cardDrawIn {
+  from {
+    transform: translateY(120px) rotate(12deg) scale(0.85);
+    opacity: 0;
+    filter: brightness(1.5);
+  }
+  to {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
 }
 
 /* MEDIA QUERIES */
@@ -1474,13 +1509,13 @@ body {
 
 .event-banner-container {
   width: 100%;
-  padding: 2.5rem 0;
+  padding: 1.2rem 0;
   background: linear-gradient(90deg, transparent, rgba(20, 20, 20, 0.95) 15%, rgba(20, 20, 20, 0.95) 85%, transparent);
   border-top: 2px solid var(--accent-gold);
   border-bottom: 2px solid var(--accent-gold);
   box-shadow: 0 0 35px rgba(195, 160, 94, 0.15);
   text-align: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 1.8rem;
   transform: scaleY(0);
   animation: bannerExpand 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   position: relative;
@@ -1511,10 +1546,11 @@ body {
 }
 
 @keyframes heavy-shake {
-  10%, 90% { transform: translate3d(-3px, 3px, 0) rotate(-0.5deg); }
-  20%, 80% { transform: translate3d(6px, -3px, 0) rotate(1deg); }
-  30%, 50%, 70% { transform: translate3d(-9px, 6px, 0) rotate(-1.5deg); }
-  40%, 60% { transform: translate3d(9px, -6px, 0) rotate(1.5deg); }
+  0%, 100% { transform: scale(1.05) translate3d(0, 0, 0) rotate(0deg); }
+  10%, 90% { transform: scale(1.05) translate3d(-5px, 5px, 0) rotate(-0.5deg); }
+  20%, 80% { transform: scale(1.05) translate3d(10px, -5px, 0) rotate(1deg); }
+  30%, 50%, 70% { transform: scale(1.05) translate3d(-15px, 10px, 0) rotate(-1.5deg); }
+  40%, 60% { transform: scale(1.05) translate3d(15px, -10px, 0) rotate(1.5deg); }
 }
 
 .environmental-wave-overlay {
