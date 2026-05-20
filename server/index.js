@@ -532,11 +532,11 @@ io.on('connection', (socket) => {
     const isDefender = room.currentTarget === pId;
     if (!isAttacker && !isDefender) return socket.emit('error_msg', 'Only usable on your turn (Attack/Defense)!');
 
-    const needsTarget = p.heroClass === 'warrior';
+    const needsTarget = isAttacker;
     if (needsTarget && !room.currentTarget) return socket.emit('error_msg', '먼저 대상을 선택하세요!');
 
-    p.points = 0;
-    room.logs.push(`${p.name}이(가) ${p.heroClass} 어빌리티를 사용했습니다!`);
+    p.points -= 5;
+    room.logs.push(`${p.name}이(가) ${p.heroClass === 'warrior' ? '전사' : p.heroClass === 'crusader' ? '성전사' : '암살자'} 어빌리티를 사용했습니다!`);
 
     switch (p.heroClass) {
       case 'warrior':
@@ -548,10 +548,10 @@ io.on('connection', (socket) => {
         room.logs.push(` - 성전사의 방패: 방어력 +5.`);
         break;
       case 'assassin':
-        const attackerId = room.turnOrder[room.activeIdx];
-        if (attackerId && room.players[attackerId]) {
-          room.players[attackerId].hp = Math.max(0, room.players[attackerId].hp - 10);
-          room.logs.push(` - 암살자의 단검: ${room.players[attackerId].name}에게 10 데미지.`);
+        const oppId = isAttacker ? room.currentTarget : room.turnOrder[room.activeIdx];
+        if (oppId && room.players[oppId]) {
+          room.players[oppId].hp = Math.max(0, room.players[oppId].hp - 10);
+          room.logs.push(` - 암살자의 단검: ${room.players[oppId].name}에게 10 데미지.`);
           if (checkMatchEnded(room)) return;
         }
         break;
@@ -665,23 +665,29 @@ function handleDisconnect(socket) {
 
   if (rId && rooms[rId]) {
     const room = rooms[rId];
-    // Don't delete player from room immediately to allow re-connect
-    // Just mark as disconnected if you want, or keep it as is.
     room.logs.push(`${room.players[pId]?.name || 'Unknown'} lost connection.`);
-
-    if (room.hostId === pId && room.turnOrder.length > 0) {
-      room.hostId = room.turnOrder[0];
-    }
 
     if (room.phase !== 'waiting' && room.phase !== 'victory') {
       const p = room.players[pId];
       if (p) p.hp = 0; // Mark as dead if they leave during match
-      checkMatchEnded(room);
+    }
+
+    // Remove player from room data
+    delete room.players[pId];
+    room.turnOrder = room.turnOrder.filter(id => id !== pId);
+    socket.leave(rId);
+
+    // Reassign host if needed
+    if (room.hostId === pId && room.turnOrder.length > 0) {
+      room.hostId = room.turnOrder[0];
     }
 
     if (room.turnOrder.length === 0) {
       delete rooms[rId];
     } else {
+      if (room.phase !== 'waiting' && room.phase !== 'victory') {
+        checkMatchEnded(room);
+      }
       updateAllPlayers(room);
     }
   }
@@ -1078,8 +1084,8 @@ function triggerEnvironmentalEvent(room, forcedChoice) {
   const numPlayers = Object.keys(room.players).length;
   const injectionCount = numPlayers * 2; // Small batch
 
-  const injection = Array(injectionCount).fill(null).map((_, i) => ({
-    ...eventPool[i % eventPool.length],
+  const injection = Array(injectionCount).fill(null).map(() => ({
+    ...eventPool[Math.floor(Math.random() * eventPool.length)],
     id: `ev_deck_${Math.random().toString(36)}`
   }));
   room.deck.unshift(...injection);

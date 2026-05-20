@@ -37,6 +37,7 @@ export default function App() {
    const [npcMessage, setNpcMessage] = useState("Welcome to the abyss...");
    const [shakingPlayerId, setShakingPlayerId] = useState(null);
    const [inspectedCard, setInspectedCard] = useState(null);
+   const [inspectedHero, setInspectedHero] = useState(null);
    const [showBloodPactConfirm, setShowBloodPactConfirm] = useState(false);
 
    const [showPopup, setShowPopup] = useState(false);
@@ -770,6 +771,32 @@ export default function App() {
             </div>
          )}
 
+         {inspectedHero && (
+            <div className="inspect-overlay" onClick={() => setInspectedHero(null)}>
+               <div className="inspect-content" onClick={e => e.stopPropagation()}>
+                  <div style={{ width: '300px', height: '420px', borderRadius: '12px', overflow: 'hidden', border: '2px solid var(--accent-gold)', background: '#111', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                     {inspectedHero.heroClass?.image ? (
+                        <img src={inspectedHero.heroClass.image} alt={inspectedHero.heroClass.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                     ) : (
+                        <div style={{ fontSize: '8rem' }}>{inspectedHero.heroClass?.icon}</div>
+                     )}
+                  </div>
+                  <div className="inspect-details">
+                     <div className="inspect-type" style={{ color: 'var(--accent-gold)' }}>직업</div>
+                     <h2>{inspectedHero.heroClass?.name || '알 수 없음'}</h2>
+                     <div className="inspect-stat">플레이어: {inspectedHero.player?.name}</div>
+                     <div className="inspect-stat">HP: {Math.max(0, inspectedHero.player?.hp || 0)} / 100</div>
+                     <div className="inspect-stat">포인트: {inspectedHero.player?.points || 0}</div>
+                     <div className="inspect-desc" style={{ marginTop: '1rem', borderTop: '1px solid #333', paddingTop: '1rem' }}>
+                        <strong style={{ color: 'var(--accent-gold)' }}>⚡ 어빌리티 (5P)</strong><br/>
+                        {inspectedHero.heroClass?.desc || '설명 없음'}
+                     </div>
+                     <button className="btn" style={{ marginTop: '2rem' }} onClick={() => setInspectedHero(null)}>닫기</button>
+                  </div>
+               </div>
+            </div>
+         )}
+
          {inspectedCard && (
             <div className="inspect-overlay" onClick={() => setInspectedCard(null)}>
                <div className="inspect-content" onClick={e => e.stopPropagation()}>
@@ -857,7 +884,10 @@ export default function App() {
                   {p.isStunned && <div className="status-icon">💤</div>}
                </div>
 
-               <div className={`char-portrait char-style-${Math.max(0, gameState.turnOrder.indexOf(id))}`} style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', filter: p.hp <= 0 ? 'grayscale(1)' : 'none', background: char?.image ? `url(${char.image}) center/cover no-repeat` : 'rgba(0,0,0,0.3)', borderRadius: '50%', border: '2px solid var(--accent-gold)' }}>
+               <div className={`char-portrait char-style-${Math.max(0, gameState.turnOrder.indexOf(id))}`}
+                  style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', filter: p.hp <= 0 ? 'grayscale(1)' : 'none', background: char?.image ? `url(${char.image}) center/cover no-repeat` : 'rgba(0,0,0,0.3)', borderRadius: '50%', border: '2px solid var(--accent-gold)' }}
+                  onContextMenu={(e) => { e.preventDefault(); setInspectedHero({ player: p, heroClass: char }); }}
+               >
                   {!char?.image && char?.icon}
                </div>
 
@@ -875,7 +905,7 @@ export default function App() {
                <div className="player-controls" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '1.5rem', gap: '1rem' }}>
                   <div style={{ display: 'flex', gap: '1rem' }}>
                      <button className="btn btn-ability"
-                        disabled={gameState.isResolving || p.points < 5 || (!isMeAttacker && !isMeDefender) || (p.heroClass === 'warrior' && !gameState.currentTarget)}
+                        disabled={gameState.isResolving || p.points < 5 || (!isMeAttacker && !isMeDefender) || (isMeAttacker && !gameState.currentTarget)}
                         onClick={useAbility}>⚡ 어빌리티 사용 (5P)</button>
 
                      <button className="btn" disabled={gameState.isResolving || (!isMeAttacker && !isMeDefender) || gameState.turnStats?.mergeUsedBy?.[persistentId]} onClick={() => { setSelectedCards([]); setIsMergeModalOpen(true); }}>합성</button>
@@ -885,8 +915,8 @@ export default function App() {
                      {isMeDefender && gameState.defenderPhaseStart && !gameState.slots?.def && !gameState.slots?.gaveUp &&
                         <button className="btn" style={{ color: 'var(--accent-red)' }} disabled={gameState.isResolving} onClick={giveUpDefense}>🏳️ 수비 포기</button>}
 
-                     {isMe && p.hand.length <= 2 && <button className="btn" style={{ color: 'crimson', borderColor: 'crimson' }} disabled={gameState.isResolving} onClick={() => { 
-                        socket.emit('execute_blood_pact', { roomId: gameState.id }); 
+                     {isMe && p.hand.length <= 2 && <button className="btn" style={{ color: 'crimson', borderColor: 'crimson' }} disabled={gameState.isResolving} onClick={() => {
+                        socket.emit('execute_blood_pact', { roomId: gameState.id });
                         setDamageDealt({ playerId: persistentId, amount: 25 });
                         setShakingPlayerId(persistentId);
                         setTimeout(() => {
