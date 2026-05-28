@@ -841,44 +841,44 @@ export default function App() {
          )}
 
          {/* EVENT REVEAL OVERLAY */}
-          {revealingEventCards && (() => {
-             const env = getEnvironmentDetails(revealingEventCards.event);
-             return (
-                <div className="event-reveal-overlay">
-                   <div className="event-banner-container">
-                      <div className="blink-glow" style={{ fontSize: '2.5rem', textShadow: `0 0 20px ${env.color}`, animation: 'floatEffect 3s ease-in-out infinite' }}>
-                         {env.icon}
-                      </div>
-                      <h1 className="font-gothic" style={{ color: env.color, fontSize: '2rem', letterSpacing: '3px', textShadow: `0 0 15px ${env.color}`, marginTop: '0.3rem' }}>
-                         {env.title}
-                      </h1>
-                      <p style={{ color: '#ccc', fontSize: '0.95rem', letterSpacing: '1px', marginTop: '0.2rem', opacity: 0.9 }}>
-                         {env.desc}
-                      </p>
-                   </div>
-                   <div style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', width: '100%' }}>
-                      {revealingEventCards.cards.map((card, i) => (
-                         <div key={i} className="reveal-card-container">
-                            <div className={`card-3d-inner ${flippedIndices.includes(i) ? 'flipped' : ''}`}>
-                               <div className="card-3d-back" style={{ background: `url(${eventCardBackImg}) center/cover no-repeat`, borderColor: env.color, borderWidth: '2px' }}>
-                               </div>
-                               <div className={`card-3d-front card-bg-${card?.type}`} style={{ borderColor: env.color }}>
-                                  <div className="card-header" style={{ fontSize: '0.6rem', color: env.color, position: 'absolute', top: '5px', left: '5px' }}>환경 보상</div>
-                                  <div className="card-item-name-mid" style={{ fontSize: '1.2rem', color: '#fff', textShadow: '0 0 5px rgba(255,255,255,0.3)' }}>{card?.name || '신비한 카드'}</div>
-                                  <div style={{ fontSize: '0.85rem', color: '#aaa', padding: '0 10px', textAlign: 'center', margin: 'auto 0 20px 0', lineHeight: '1.4' }}>
-                                     {card?.desc || '고유한 전장의 기운을 품고 있는 특별한 장비.'}
-                                  </div>
-                                  <div className="card-value-bottom stat-boosted" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', bottom: '15px' }}>
-                                     {card?.value || 0}
-                                  </div>
-                               </div>
-                            </div>
-                         </div>
-                      ))}
-                   </div>
-                </div>
-             );
-          })()}
+         {revealingEventCards && (() => {
+            const env = getEnvironmentDetails(revealingEventCards.event);
+            return (
+               <div className="event-reveal-overlay">
+                  <div className="event-banner-container">
+                     <div className="blink-glow" style={{ fontSize: '2.5rem', textShadow: `0 0 20px ${env.color}`, animation: 'floatEffect 3s ease-in-out infinite' }}>
+                        {env.icon}
+                     </div>
+                     <h1 className="font-gothic" style={{ color: env.color, fontSize: '2rem', letterSpacing: '3px', textShadow: `0 0 15px ${env.color}`, marginTop: '0.3rem' }}>
+                        {env.title}
+                     </h1>
+                     <p style={{ color: '#ccc', fontSize: '0.95rem', letterSpacing: '1px', marginTop: '0.2rem', opacity: 0.9 }}>
+                        {env.desc}
+                     </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', width: '100%' }}>
+                     {revealingEventCards.cards.map((card, i) => (
+                        <div key={i} className="reveal-card-container">
+                           <div className={`card-3d-inner ${flippedIndices.includes(i) ? 'flipped' : ''}`}>
+                              <div className="card-3d-back" style={{ background: `url(${eventCardBackImg}) center/cover no-repeat`, borderColor: env.color, borderWidth: '2px' }}>
+                              </div>
+                              <div className={`card-3d-front card-bg-${card?.type}`} style={{ borderColor: env.color }}>
+                                 <div className="card-header" style={{ fontSize: '0.6rem', color: env.color, position: 'absolute', top: '5px', left: '5px' }}>환경 보상</div>
+                                 <div className="card-item-name-mid" style={{ fontSize: '1.2rem', color: '#fff', textShadow: '0 0 5px rgba(255,255,255,0.3)' }}>{card?.name || '신비한 카드'}</div>
+                                 <div style={{ fontSize: '0.85rem', color: '#aaa', padding: '0 10px', textAlign: 'center', margin: 'auto 0 20px 0', lineHeight: '1.4' }}>
+                                    {card?.desc || '고유한 전장의 기운을 품고 있는 특별한 장비.'}
+                                 </div>
+                                 <div className="card-value-bottom stat-boosted" style={{ fontSize: '1.8rem', color: 'var(--accent-gold)', bottom: '15px' }}>
+                                    {card?.value || 0}
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            );
+         })()}
 
          {inspectedHero && (
             <div className="inspect-overlay" onClick={() => setInspectedHero(null)}>
@@ -897,7 +897,7 @@ export default function App() {
                      <div className="inspect-stat">HP: {Math.max(0, inspectedHero.player?.hp || 0)} / 100</div>
                      <div className="inspect-stat">포인트: {inspectedHero.player?.points || 0}</div>
                      <div className="inspect-desc" style={{ marginTop: '1rem', borderTop: '1px solid #333', paddingTop: '1rem' }}>
-                        <strong style={{ color: 'var(--accent-gold)' }}>⚡ 어빌리티 (5P)</strong><br/>
+                        <strong style={{ color: 'var(--accent-gold)' }}>⚡ 어빌리티 (5P)</strong><br />
                         {inspectedHero.heroClass?.desc || '설명 없음'}
                      </div>
                      <button className="btn" style={{ marginTop: '2rem' }} onClick={() => setInspectedHero(null)}>닫기</button>
